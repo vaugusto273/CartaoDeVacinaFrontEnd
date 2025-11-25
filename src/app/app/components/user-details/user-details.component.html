@@ -54,20 +54,9 @@
     </div>
 
     <!-- CARTÃO EM GRADE -->
+    <!-- CARTÃO EM GRADE -->
     <div class="vaccine-card">
 
-        <!-- LADO ESQUERDO: DOSES -->
-        <div class="vaccine-sidebar">
-            <div class="sidebar-header">
-                <span>Vaccines</span>
-                <span>Doses</span>
-            </div>
-            <div class="dose-row" *ngFor="let d of doseLevels">
-                {{ doseLabel(d) }}
-            </div>
-        </div>
-
-        <!-- GRID DE VACINAS x DOSES -->
         <div class="vaccine-grid-wrapper">
 
             <div *ngIf="vaccineColumns.length === 0" class="no-records">
@@ -76,15 +65,26 @@
 
             <div *ngIf="vaccineColumns.length > 0" class="vaccine-grid">
 
-                <!-- UMA COLUNA POR VACINA -->
-                <div class="vaccine-grid-column" *ngFor="let vaccine of vaccineColumns">
-                    <!-- cabeçalho da vacina -->
-                    <div class="vaccine-grid-header">
-                        {{ vaccine.vaccineName }}
+                <!-- LINHA DE CABEÇALHO: "Vaccines/Doses" + nomes das vacinas -->
+                <div class="grid-row header-row">
+                    <div class="sidebar-header">
+                        Vaccines<br>Doses
                     </div>
 
-                    <!-- células por dose -->
-                    <div class="vaccine-grid-cell" *ngFor="let d of doseLevels" [ngClass]="{
+                    <div class="vaccine-grid-header" *ngFor="let vaccine of vaccineColumns">
+                        {{ vaccine.vaccineName }}
+                    </div>
+                </div>
+
+                <!-- UMA LINHA POR DOSE -->
+                <div class="grid-row" *ngFor="let d of doseLevels">
+                    <!-- coluna da dose -->
+                    <div class="dose-row">
+                        {{ doseLabel(d) }}
+                    </div>
+
+                    <!-- células das vacinas para essa dose -->
+                    <div class="vaccine-grid-cell" *ngFor="let vaccine of vaccineColumns" [ngClass]="{
               'taken': getRecordFor(vaccine.id, d),
               'missing': !getRecordFor(vaccine.id, d)
             }">
@@ -102,4 +102,5 @@
             </div>
         </div>
     </div>
+
 </div>
