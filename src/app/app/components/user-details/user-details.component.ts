@@ -35,6 +35,12 @@ export class UserDetailsComponent implements OnInit {
   newUserAge?: number;
   newUserGender: string = '';
   newVaccineName: string = '';
+  // campos do form de novo registro
+  newRecordUserId: number | undefined = undefined;
+  newRecordVaccineId: number | null = null;
+  newRecordDoseNumber: number | null = null;
+  newRecordDate: string = '';
+  newRecordNotes: string = '';
 
   constructor(private userService: UserService) {}
 
@@ -101,14 +107,7 @@ export class UserDetailsComponent implements OnInit {
     this.userService.getVaccinationRecords(userId).subscribe({
       next: (records) => {
         this.records = records;
-
-        // descobre quais vacinas esse usuário tem
-        const vaccineIds = Array.from(new Set(records.map((r) => r.vaccineID)));
-
-        this.vaccineColumns = vaccineIds
-          .map((id) => this.vaccines.find((v) => v.id === id))
-          .filter((v): v is Vaccine => !!v);
-
+        this.updateVaccineColumns();
         this.loading = false;
       },
       error: (err) => {
@@ -182,14 +181,14 @@ export class UserDetailsComponent implements OnInit {
     });
   }
 
-      addVaccine(): void {
+  addVaccine(): void {
     const name = this.newVaccineName.trim();
     if (!name) {
       return;
     }
 
     const payload: Partial<Vaccine> = {
-      vaccineName: name
+      vaccineName: name,
     };
 
     this.userService.createVaccine(payload).subscribe({
@@ -204,9 +203,54 @@ export class UserDetailsComponent implements OnInit {
       error: (err: unknown) => {
         console.error('Error creating vaccine:', err);
         this.errorMessage = 'Failed to create vaccine.';
-      }
+      },
     });
   }
+  addRecord(): void {
 
+  if (!this.newRecordVaccineId || !this.newRecordDoseNumber || !this.newRecordDate) {
+    this.errorMessage = 'Vaccine, dose and date are required.';
+    return;
+  }
 
+  const payload: Partial<VaccinationRecord> = {
+    userID: this.newRecordUserId,
+    vaccineID: this.newRecordVaccineId,
+    doseNumber: this.newRecordDoseNumber,
+    applicationDate: this.newRecordDate,
+    notes: this.newRecordNotes || undefined
+  };
+
+  if (!this.newRecordUserId) {
+  this.errorMessage = 'Select a user first.';
+  return;
+}
+
+this.userService.createVaccinationRecord(this.newRecordUserId, payload).subscribe({
+  next: (created: VaccinationRecord) => {
+
+    this.newRecordUserId = undefined;
+    this.newRecordVaccineId = null;
+    this.newRecordDoseNumber = null;
+    this.newRecordDate = '';
+    this.newRecordNotes = '';
+    this.errorMessage = '';
+  },
+  error: (err: unknown) => {
+    console.error('Error creating vaccination record:', err);
+    this.errorMessage = 'Failed to create vaccination record.';
+  }
+});
+
+}
+
+  private updateVaccineColumns(): void {
+    const vaccineIds = Array.from(
+      new Set(this.records.map((r) => r.vaccineID))
+    );
+
+    this.vaccineColumns = vaccineIds
+      .map((id) => this.vaccines.find((v) => v.id === id))
+      .filter((v): v is Vaccine => !!v);
+  }
 }

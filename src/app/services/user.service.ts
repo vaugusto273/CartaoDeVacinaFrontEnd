@@ -25,7 +25,7 @@ export interface User {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private readonly apiUrl = 'http://localhost:5132/api/user';
@@ -43,7 +43,9 @@ export class UserService {
   }
 
   getVaccinationRecords(userId: number): Observable<VaccinationRecord[]> {
-    return this.http.get<VaccinationRecord[]>(`${this.recordsUrl}/${userId}/vaccinationrecords`);
+    return this.http.get<VaccinationRecord[]>(
+      `${this.recordsUrl}/${userId}/vaccinationrecords`
+    );
   }
 
   getVaccines(): Observable<Vaccine[]> {
@@ -53,8 +55,18 @@ export class UserService {
   createUser(user: Partial<User>): Observable<User> {
     return this.http.post<User>(this.apiUrl, user);
   }
-  
+
   createVaccine(vaccine: Partial<Vaccine>): Observable<Vaccine> {
     return this.http.post<Vaccine>(this.vaccineUrl, vaccine);
+  }
+
+  createVaccinationRecord(
+    userId: number,
+    record: Partial<VaccinationRecord>
+  ): Observable<VaccinationRecord> {
+    return this.http.post<VaccinationRecord>(
+      `${this.recordsUrl}/${userId}/vaccinationrecords`,
+      record
+    );
   }
 }

@@ -172,6 +172,70 @@
             </div>
         </div>
     </div>
+    <!-- SEÇÃO: ADICIONAR REGISTRO DE VACINAÇÃO -->
+    <div class="page" style="padding-top: 0;">
+        <div class="user-info-card" style="margin-top: 8px;">
+            <div class="user-info-header">
+                <span class="section-title">Add Vaccination Record</span>
+            </div>
+            <div class="user-info-body">
+                <form (ngSubmit)="addRecord()" #recordForm="ngForm" class="new-user-form">
+                    <div class="user-info-row">
+
+                        <!-- usuário vem do select principal (selectedUserId) -->
+                        <div class="info-field small">
+                            <span class="label">User:</span>
+                            <select name="newRecordUserId" [(ngModel)]="newRecordUserId" required>
+                                <option [ngValue]="undefined">Select...</option>
+                                <option *ngFor="let u of users" [ngValue]="u.id">
+                                    {{ u.name }}
+                                </option>
+                            </select>
+                            <span class="value" *ngIf="!user">Select above</span>
+                        </div>
+
+                        <!-- vacina -->
+                        <div class="info-field">
+                            <span class="label">Vaccine:</span>
+                            <select name="newRecordVaccineId" [(ngModel)]="newRecordVaccineId" required>
+                                <option [ngValue]="null">Select...</option>
+                                <option *ngFor="let v of vaccines" [ngValue]="v.id">
+                                    {{ v.vaccineName }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- dose -->
+                        <div class="info-field small">
+                            <span class="label">Dose:</span>
+                            <input type="number" name="newRecordDoseNumber" [(ngModel)]="newRecordDoseNumber" min="1"
+                                required />
+                        </div>
+
+                        <!-- data -->
+                        <div class="info-field">
+                            <span class="label">Date:</span>
+                            <input type="date" name="newRecordDate" [(ngModel)]="newRecordDate" required />
+                        </div>
+
+                        <!-- notas -->
+                        <div class="info-field" style="flex: 1;">
+                            <span class="label">Notes:</span>
+                            <input type="text" name="newRecordNotes" [(ngModel)]="newRecordNotes"
+                                placeholder="Optional" />
+                        </div>
+
+                        <div class="info-field">
+                            <button type="submit" [disabled]="!recordForm.form.valid || !selectedUserId">
+                                Add Record
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 </div>
