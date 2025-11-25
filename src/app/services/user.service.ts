@@ -19,6 +19,8 @@ export interface Vaccine {
 export interface User {
   id: number;
   name: string;
+  age: string;
+  gender: string;
   vaccinationRecords: VaccinationRecord[];
 }
 

@@ -26,21 +26,23 @@
                         </option>
                     </select>
                 </div>
-
+                
                 <div class="info-field small" *ngIf="user">
                     <span class="label">ID:</span>
                     <span class="value">{{ user.id }}</span>
                 </div>
-
-                <div class="info-field small">
+                
+                <div class="info-field small" *ngIf="user">
                     <span class="label">Age:</span>
-                    <span class="value">–</span>
+                    <span class="value">{{ user.age }}</span>
                 </div>
-                <div class="info-field small">
+                
+                <div class="info-field small" *ngIf="user">
                     <span class="label">Gender:</span>
-                    <span class="value">–</span>
+                    <span class="value">{{ user.gender }}</span>
                 </div>
-            </div>
+                
+                </div>
         </div>
     </div>
 
