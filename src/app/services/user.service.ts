@@ -19,7 +19,7 @@ export interface Vaccine {
 export interface User {
   id: number;
   name: string;
-  age: string;
+  age: number;
   gender: string;
   vaccinationRecords: VaccinationRecord[];
 }
@@ -48,5 +48,13 @@ export class UserService {
 
   getVaccines(): Observable<Vaccine[]> {
     return this.http.get<Vaccine[]>(this.vaccineUrl);
+  }
+
+  createUser(user: Partial<User>): Observable<User> {
+    return this.http.post<User>(this.apiUrl, user);
+  }
+  
+  createVaccine(vaccine: Partial<Vaccine>): Observable<Vaccine> {
+    return this.http.post<Vaccine>(this.vaccineUrl, vaccine);
   }
 }

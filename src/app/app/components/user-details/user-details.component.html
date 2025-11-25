@@ -6,7 +6,7 @@
     {{ errorMessage }}
 </div>
 
-<div *ngIf="!loading && users.length > 0" class="user-page">
+<div *ngIf="!loading && users.length > 0" class="user page">
 
     <!-- CARD DO USUÁRIO -->
     <div class="user-info-card">
@@ -26,23 +26,23 @@
                         </option>
                     </select>
                 </div>
-                
+
                 <div class="info-field small" *ngIf="user">
                     <span class="label">ID:</span>
                     <span class="value">{{ user.id }}</span>
                 </div>
-                
+
                 <div class="info-field small" *ngIf="user">
                     <span class="label">Age:</span>
                     <span class="value">{{ user.age }}</span>
                 </div>
-                
+
                 <div class="info-field small" *ngIf="user">
                     <span class="label">Gender:</span>
                     <span class="value">{{ user.gender }}</span>
                 </div>
-                
-                </div>
+
+            </div>
         </div>
     </div>
 
@@ -104,5 +104,74 @@
             </div>
         </div>
     </div>
+
+    <!-- SEÇÃO: ADICIONAR NOVO USUÁRIO -->
+    <div class="page" style="padding-top: 0;">
+        <div class="user-info-card" style="margin-top: 8px;">
+            <div class="user-info-header">
+                <span class="section-title">Add New User</span>
+            </div>
+            <div class="user-info-body">
+                <form (ngSubmit)="addUser()" #userForm="ngForm" class="form">
+                    <div class="user-info-row">
+
+                        <div class="info-field">
+                            <span class="label">Name:</span>
+                            <input type="text" name="newUserName" [(ngModel)]="newUserName" required />
+                        </div>
+
+                        <div class="info-field small">
+                            <span class="label">Age:</span>
+                            <input type="number" name="newUserAge" [(ngModel)]="newUserAge" />
+                        </div>
+
+                        <div class="info-field small">
+                            <span class="label">Gender:</span>
+                            <select name="newUserGender" [(ngModel)]="newUserGender">
+                                <option value="Masculino">Masculino</option>
+                                <option value="Feminino">Feminino</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="info-field">
+                            <button type="submit" [disabled]="!userForm.form.valid">
+                                Add User
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO: ADICIONAR NOVA VACINA -->
+    <div class="page" style="padding-top: 0;">
+        <div class="user-info-card" style="margin-top: 8px;">
+            <div class="user-info-header">
+                <span class="section-title">Add New Vaccine</span>
+            </div>
+            <div class="user-info-body">
+                <form (ngSubmit)="addVaccine()" #vaccineForm="ngForm" class="form">
+                    <div class="user-info-row">
+
+                        <div class="info-field">
+                            <span class="label">Name:</span>
+                            <input type="text" name="newVaccineName" [(ngModel)]="newVaccineName" required />
+                        </div>
+
+                        <div class="info-field">
+                            <button type="submit" [disabled]="!vaccineForm.form.valid">
+                                Add Vaccine
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 </div>

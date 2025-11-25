@@ -5,7 +5,7 @@ import {
   UserService,
   User,
   VaccinationRecord,
-  Vaccine
+  Vaccine,
 } from '../../../services/user.service';
 
 @Component({
@@ -13,7 +13,7 @@ import {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './user-details.component.html',
-  styleUrl: './user-details.component.css'
+  styleUrl: './user-details.component.css',
 })
 export class UserDetailsComponent implements OnInit {
   users: User[] = [];
@@ -30,6 +30,11 @@ export class UserDetailsComponent implements OnInit {
 
   loading = true;
   errorMessage = '';
+
+  newUserName: string = '';
+  newUserAge?: number;
+  newUserGender: string = '';
+  newVaccineName: string = '';
 
   constructor(private userService: UserService) {}
 
@@ -57,14 +62,14 @@ export class UserDetailsComponent implements OnInit {
             console.error('Error loading users:', err);
             this.loading = false;
             this.errorMessage = 'Failed to load users.';
-          }
+          },
         });
       },
       error: (err) => {
         console.error('Error loading vaccines:', err);
         this.loading = false;
         this.errorMessage = 'Failed to load vaccines.';
-      }
+      },
     });
   }
 
@@ -89,7 +94,7 @@ export class UserDetailsComponent implements OnInit {
         console.error('Error loading user:', err);
         this.errorMessage = 'Failed to load user.';
         this.loading = false;
-      }
+      },
     });
 
     // carrega registros de vacinação desse usuário
@@ -98,10 +103,10 @@ export class UserDetailsComponent implements OnInit {
         this.records = records;
 
         // descobre quais vacinas esse usuário tem
-        const vaccineIds = Array.from(new Set(records.map(r => r.vaccineID)));
+        const vaccineIds = Array.from(new Set(records.map((r) => r.vaccineID)));
 
         this.vaccineColumns = vaccineIds
-          .map(id => this.vaccines.find(v => v.id === id))
+          .map((id) => this.vaccines.find((v) => v.id === id))
           .filter((v): v is Vaccine => !!v);
 
         this.loading = false;
@@ -110,14 +115,14 @@ export class UserDetailsComponent implements OnInit {
         console.error('Error loading vaccination records:', err);
         this.errorMessage = 'Failed to load vaccination records.';
         this.loading = false;
-      }
+      },
     });
   }
 
   // retorna o registro para uma célula (vacina, dose) – ou undefined se não tiver
   getRecordFor(vaccineId: number, dose: number): VaccinationRecord | undefined {
     return this.records.find(
-      r => r.vaccineID === vaccineId && r.doseNumber === dose
+      (r) => r.vaccineID === vaccineId && r.doseNumber === dose
     );
   }
 
@@ -128,12 +133,80 @@ export class UserDetailsComponent implements OnInit {
 
   doseLabel(dose: number): string {
     switch (dose) {
-      case 1: return '1st Dose';
-      case 2: return '2nd Dose';
-      case 3: return '3rd Dose';
-      case 4: return '1st Booster';
-      case 5: return '2nd Booster';
-      default: return `Dose ${dose}`;
+      case 1:
+        return '1st Dose';
+      case 2:
+        return '2nd Dose';
+      case 3:
+        return '3rd Dose';
+      case 4:
+        return '1st Booster';
+      case 5:
+        return '2nd Booster';
+      default:
+        return `Dose ${dose}`;
     }
   }
+
+  addUser(): void {
+    const name = this.newUserName.trim();
+    if (!name) {
+      return;
+    }
+
+    const payload: Partial<User> = {
+      name,
+      age: this.newUserAge,
+      gender: this.newUserGender || undefined,
+    };
+
+    this.userService.createUser(payload).subscribe({
+      next: (created: User) => {
+        // 👈 tipo explícito
+        this.users.push(created);
+
+        this.selectedUserId = created.id;
+        this.user = created;
+        this.records = [];
+        this.vaccineColumns = [];
+
+        this.newUserName = '';
+        this.newUserAge = undefined;
+        this.newUserGender = '';
+      },
+      error: (err: unknown) => {
+        // 👈 ou any se quiser
+        console.error('Error creating user:', err);
+        this.errorMessage = 'Failed to create user.';
+      },
+    });
+  }
+
+      addVaccine(): void {
+    const name = this.newVaccineName.trim();
+    if (!name) {
+      return;
+    }
+
+    const payload: Partial<Vaccine> = {
+      vaccineName: name
+    };
+
+    this.userService.createVaccine(payload).subscribe({
+      next: (created: Vaccine) => {
+        // adiciona na lista de vacinas conhecidas
+        this.vaccines.push(created);
+
+        // NÃO mexemos em vaccineColumns aqui,
+        // porque a nova vacina ainda não tem registros para nenhum usuário.
+        this.newVaccineName = '';
+      },
+      error: (err: unknown) => {
+        console.error('Error creating vaccine:', err);
+        this.errorMessage = 'Failed to create vaccine.';
+      }
+    });
+  }
+
+
 }
