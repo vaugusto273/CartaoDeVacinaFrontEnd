@@ -5,5 +5,9 @@
 <ul *ngIf="!loading">
     <li *ngFor="let user of users">
         {{ user.id }} - {{ user.name }}
+        |
+        <a [routerLink]="['/users', user.id]">
+            View vaccination card
+        </a>
     </li>
 </ul>

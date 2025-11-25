@@ -1,0 +1,102 @@
+<div *ngIf="loading" class="loading">
+    Loading...
+</div>
+
+<div *ngIf="!loading && errorMessage" class="error">
+    {{ errorMessage }}
+</div>
+
+<div *ngIf="!loading && users.length > 0" class="user-page">
+
+    <div class="user-info-card">
+        <div class="user-info-header">
+            <span class="section-title">Vaccination Card</span>
+        </div>
+
+        <div class="user-info-body">
+            <div class="user-info-row">
+
+                <div class="info-field">
+                    <span class="label">User:</span>
+                    <select [ngModel]="selectedUserId" (ngModelChange)="onUserChange($event)" class="user-select">
+                        <option *ngFor="let u of users" [ngValue]="u.id">
+                            {{ u.name }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="info-field small" *ngIf="user">
+                    <span class="label">ID:</span>
+                    <span class="value">{{ user.id }}</span>
+                </div>
+
+                <div class="info-field small">
+                    <span class="label">Age:</span>
+                    <span class="value">–</span>
+                </div>
+                <div class="info-field small">
+                    <span class="label">Gender:</span>
+                    <span class="value">–</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABAS (VISUAL) -->
+    <div class="tabs-container">
+        <button class="tab active">National Vaccination Card</button>
+        <button class="tab">Anti Rabies</button>
+        <button class="tab">Contact BCG</button>
+        <button class="tab">Private Vaccines</button>
+        <button class="tab">Other Vaccines</button>
+    </div>
+
+    <!-- ÁREA PRINCIPAL DO CARTÃO -->
+    <div class="vaccine-card">
+
+        <div class="vaccine-sidebar">
+            <div class="sidebar-header">
+                <span>Vaccines</span>
+                <span>Doses</span>
+            </div>
+            <div class="dose-row">1st Dose</div>
+            <div class="dose-row">2nd Dose</div>
+            <div class="dose-row">3rd Dose</div>
+            <div class="dose-row">1st Booster</div>
+            <div class="dose-row">2nd Booster</div>
+        </div>
+
+        <div class="vaccine-table-wrapper">
+
+            <div class="vaccine-columns" *ngIf="vaccineColumns.length > 0">
+                <div class="vaccine-column" *ngFor="let v of vaccineColumns">
+                    Vaccine {{ v }}
+                </div>
+            </div>
+
+            <div *ngIf="records.length === 0" class="no-records">
+                No vaccination records for this user.
+            </div>
+
+            <table *ngIf="records.length > 0" class="vaccine-table">
+                <thead>
+                    <tr>
+                        <th>Vaccine ID</th>
+                        <th>Dose</th>
+                        <th>Application date</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let record of records">
+                        <td>{{ record.vaccineID }}</td>
+                        <td>{{ record.doseNumber }}</td>
+                        <td>{{ formatDate(record.applicationDate) }}</td>
+                        <td>{{ record.notes || '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
