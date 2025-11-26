@@ -236,6 +236,46 @@
             </div>
         </div>
     </div>
+    <!-- SEÇÃO: DELETE USER -->
+    <div class="page" style="padding-top: 0;">
+        <div class="user-info-card" style="margin-top: 8px;">
+            <div class="user-info-header">
+                <span class="section-title">Delete User</span>
+            </div>
+
+            <div class="user-info-body">
+                <div class="user-info-row">
+
+                    <!-- SELECT DO USUÁRIO A DELETAR -->
+                    <div class="info-field small">
+                        <span class="label">User:</span>
+                        <select name="deleteUserId" [(ngModel)]="deleteUserId" required>
+                            <option [ngValue]="undefined">Select...</option>
+                            <option *ngFor="let u of users" [ngValue]="u.id">
+                                {{ u.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- BOTÃO DELETAR -->
+                    <div class="info-field">
+                        <button type="button" (click)="deleteUser()" [disabled]="!deleteUserId" style="
+              padding: 4px 10px;
+              background-color: #d9534f;
+              color: white;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+            ">
+                            Delete User
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 </div>

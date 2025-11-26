@@ -41,6 +41,9 @@ export class UserDetailsComponent implements OnInit {
   newRecordDoseNumber: number | null = null;
   newRecordDate: string = '';
   newRecordNotes: string = '';
+  
+  deleteUserId: number | undefined = undefined;
+
 
   constructor(private userService: UserService) {}
 
@@ -207,42 +210,45 @@ export class UserDetailsComponent implements OnInit {
     });
   }
   addRecord(): void {
+    if (
+      !this.newRecordVaccineId ||
+      !this.newRecordDoseNumber ||
+      !this.newRecordDate
+    ) {
+      this.errorMessage = 'Vaccine, dose and date are required.';
+      return;
+    }
 
-  if (!this.newRecordVaccineId || !this.newRecordDoseNumber || !this.newRecordDate) {
-    this.errorMessage = 'Vaccine, dose and date are required.';
-    return;
+    const payload: Partial<VaccinationRecord> = {
+      userID: this.newRecordUserId,
+      vaccineID: this.newRecordVaccineId,
+      doseNumber: this.newRecordDoseNumber,
+      applicationDate: this.newRecordDate,
+      notes: this.newRecordNotes || undefined,
+    };
+
+    if (!this.newRecordUserId) {
+      this.errorMessage = 'Select a user first.';
+      return;
+    }
+
+    this.userService
+      .createVaccinationRecord(this.newRecordUserId, payload)
+      .subscribe({
+        next: (created: VaccinationRecord) => {
+          this.newRecordUserId = undefined;
+          this.newRecordVaccineId = null;
+          this.newRecordDoseNumber = null;
+          this.newRecordDate = '';
+          this.newRecordNotes = '';
+          this.errorMessage = '';
+        },
+        error: (err: unknown) => {
+          console.error('Error creating vaccination record:', err);
+          this.errorMessage = 'Failed to create vaccination record.';
+        },
+      });
   }
-
-  const payload: Partial<VaccinationRecord> = {
-    userID: this.newRecordUserId,
-    vaccineID: this.newRecordVaccineId,
-    doseNumber: this.newRecordDoseNumber,
-    applicationDate: this.newRecordDate,
-    notes: this.newRecordNotes || undefined
-  };
-
-  if (!this.newRecordUserId) {
-  this.errorMessage = 'Select a user first.';
-  return;
-}
-
-this.userService.createVaccinationRecord(this.newRecordUserId, payload).subscribe({
-  next: (created: VaccinationRecord) => {
-
-    this.newRecordUserId = undefined;
-    this.newRecordVaccineId = null;
-    this.newRecordDoseNumber = null;
-    this.newRecordDate = '';
-    this.newRecordNotes = '';
-    this.errorMessage = '';
-  },
-  error: (err: unknown) => {
-    console.error('Error creating vaccination record:', err);
-    this.errorMessage = 'Failed to create vaccination record.';
-  }
-});
-
-}
 
   private updateVaccineColumns(): void {
     const vaccineIds = Array.from(
@@ -253,4 +259,41 @@ this.userService.createVaccinationRecord(this.newRecordUserId, payload).subscrib
       .map((id) => this.vaccines.find((v) => v.id === id))
       .filter((v): v is Vaccine => !!v);
   }
+
+
+deleteUser(): void {
+  if (!this.deleteUserId) {
+    this.errorMessage = 'Select a user to delete.';
+    return;
+  }
+
+  const confirmDelete = confirm('Are you sure you want to delete this user?');
+  if (!confirmDelete) return;
+
+  const userIdToDelete = this.deleteUserId;
+
+  this.userService.deleteUser(userIdToDelete).subscribe({
+    next: () => {
+      // remove da lista local
+      this.users = this.users.filter(u => u.id !== userIdToDelete);
+
+      // se o usuário exibido no cartão for o que foi deletado, limpa a tela
+      if (this.user && this.user.id === userIdToDelete) {
+        this.user = undefined;
+        this.records = [];
+        this.vaccineColumns = [];
+      }
+
+      // limpa o select da seção de delete
+      this.deleteUserId = undefined;
+      this.errorMessage = '';
+    },
+    error: (err: unknown) => {
+      console.error('Error deleting user:', err);
+      this.errorMessage = 'Failed to delete user.';
+    }
+  });
 }
+
+  }
+
