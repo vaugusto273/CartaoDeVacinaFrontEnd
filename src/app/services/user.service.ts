@@ -74,4 +74,11 @@ export class UserService {
   return this.http.delete<void>(`${this.apiUrl}/${id}`);
 }
 
+deleteVaccinationRecord(userId: number, recordId: number): Observable<void> {
+  return this.http.delete<void>(
+    `${this.recordsUrl}/${userId}/vaccinationrecords/${recordId}`
+  );
+}
+
+
 }

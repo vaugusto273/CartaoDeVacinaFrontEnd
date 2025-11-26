@@ -41,9 +41,9 @@ export class UserDetailsComponent implements OnInit {
   newRecordDoseNumber: number | null = null;
   newRecordDate: string = '';
   newRecordNotes: string = '';
-  
-  deleteUserId: number | undefined = undefined;
 
+  deleteUserId: number | undefined = undefined;
+  deleteRecordId: number | undefined = undefined;
 
   constructor(private userService: UserService) {}
 
@@ -260,40 +260,76 @@ export class UserDetailsComponent implements OnInit {
       .filter((v): v is Vaccine => !!v);
   }
 
-
-deleteUser(): void {
-  if (!this.deleteUserId) {
-    this.errorMessage = 'Select a user to delete.';
-    return;
-  }
-
-  const confirmDelete = confirm('Are you sure you want to delete this user?');
-  if (!confirmDelete) return;
-
-  const userIdToDelete = this.deleteUserId;
-
-  this.userService.deleteUser(userIdToDelete).subscribe({
-    next: () => {
-      // remove da lista local
-      this.users = this.users.filter(u => u.id !== userIdToDelete);
-
-      // se o usuário exibido no cartão for o que foi deletado, limpa a tela
-      if (this.user && this.user.id === userIdToDelete) {
-        this.user = undefined;
-        this.records = [];
-        this.vaccineColumns = [];
-      }
-
-      // limpa o select da seção de delete
-      this.deleteUserId = undefined;
-      this.errorMessage = '';
-    },
-    error: (err: unknown) => {
-      console.error('Error deleting user:', err);
-      this.errorMessage = 'Failed to delete user.';
+  deleteUser(): void {
+    if (!this.deleteUserId) {
+      this.errorMessage = 'Select a user to delete.';
+      return;
     }
-  });
-}
 
+    const confirmDelete = confirm('Are you sure you want to delete this user?');
+    if (!confirmDelete) return;
+
+    const userIdToDelete = this.deleteUserId;
+
+    this.userService.deleteUser(userIdToDelete).subscribe({
+      next: () => {
+        // remove da lista local
+        this.users = this.users.filter((u) => u.id !== userIdToDelete);
+
+        // se o usuário exibido no cartão for o que foi deletado, limpa a tela
+        if (this.user && this.user.id === userIdToDelete) {
+          this.user = undefined;
+          this.records = [];
+          this.vaccineColumns = [];
+        }
+
+        // limpa o select da seção de delete
+        this.deleteUserId = undefined;
+        this.errorMessage = '';
+      },
+      error: (err: unknown) => {
+        console.error('Error deleting user:', err);
+        this.errorMessage = 'Failed to delete user.';
+      },
+    });
+  }
+  getVaccineName(vaccineId: number): string {
+    const vaccine = this.vaccines.find((v) => v.id === vaccineId);
+    return vaccine ? vaccine.vaccineName : `Vaccine ${vaccineId}`;
   }
 
+  deleteRecord(): void {
+    if (!this.user || !this.selectedUserId) {
+      this.errorMessage = 'Select a user on the card first.';
+      return;
+    }
+
+    if (!this.deleteRecordId) {
+      this.errorMessage = 'Select a vaccination record to delete.';
+      return;
+    }
+
+    const confirmDelete = confirm(
+      'Are you sure you want to delete this vaccination record?'
+    );
+    if (!confirmDelete) return;
+
+    const userId = this.selectedUserId;
+    const recordId = this.deleteRecordId;
+
+    this.userService.deleteVaccinationRecord(userId, recordId).subscribe({
+      next: () => {
+        // remove localmente
+        this.records = this.records.filter((r) => r.id !== recordId);
+        this.updateVaccineColumns();
+
+        this.deleteRecordId = undefined;
+        this.errorMessage = '';
+      },
+      error: (err: unknown) => {
+        console.error('Error deleting vaccination record:', err);
+        this.errorMessage = 'Failed to delete vaccination record.';
+      },
+    });
+  }
+}

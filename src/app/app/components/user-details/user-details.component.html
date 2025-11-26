@@ -276,6 +276,60 @@
         </div>
     </div>
 
+    <!-- SEÇÃO: DELETE VACCINATION RECORD -->
+    <div class="page" style="padding-top: 0;">
+        <div class="user-info-card" style="margin-top: 8px;">
+            <div class="user-info-header">
+                <span class="section-title">Delete Vaccination Record</span>
+            </div>
+
+            <div class="user-info-body">
+                <div class="user-info-row">
+
+                    <!-- Usuário atual (do cartão) -->
+                    <div class="info-field small">
+                        <span class="label">User:</span>
+                        <span class="value" *ngIf="user; else noUser">
+                            {{ user.name }} (ID: {{ user.id }})
+                        </span>
+                        <ng-template #noUser>
+                            <span class="value">Select a user above</span>
+                        </ng-template>
+                    </div>
+
+                    <!-- Select de registro -->
+                    <div class="info-field" style="flex: 1;">
+                        <span class="label">Record:</span>
+                        <select name="deleteRecordId" [(ngModel)]="deleteRecordId"
+                            [disabled]="!user || records.length === 0">
+                            <option [ngValue]="undefined">Select...</option>
+                            <option *ngFor="let r of records" [ngValue]="r.id">
+                                {{ getVaccineName(r.vaccineID) }}
+                                - Dose {{ r.doseNumber }}
+                                - {{ formatDate(r.applicationDate) }}
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <!-- Botão deletar -->
+                    <div class="info-field">
+                        <button type="button" (click)="deleteRecord()" [disabled]="!user || !deleteRecordId" style="
+              padding: 4px 10px;
+              background-color: #d9534f;
+              color: white;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+            ">
+                            Delete Record
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 </div>
